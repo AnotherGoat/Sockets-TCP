@@ -32,11 +32,12 @@ public class ClienteTCP {
             System.out.println("Bienvenido al servidor");
 
             do {
-
+                // Pide entrada al usuario
                 System.out.println("Ingrese un mensaje o \"salir\" para salir");
                 System.out.print("-> ");
-
                 mensaje = teclado.nextLine();
+
+                // Envía el mensaje al servidor
                 out.writeUTF(mensaje);
 
                 if (mensaje.equals("salir")) {
