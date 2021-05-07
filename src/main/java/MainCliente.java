@@ -2,8 +2,8 @@ public class MainCliente {
 
     public static void main(String[] args) {
 
-        String host = "127.0.0.1";
-        int puerto = 80;
+        String host = args[0];
+        int puerto = Integer.parseInt(args[1]);
 
         ClienteTCP cliente = new ClienteTCP(host, puerto);
         cliente.iniciar();
