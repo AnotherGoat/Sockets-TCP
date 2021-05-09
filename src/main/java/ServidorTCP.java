@@ -4,7 +4,6 @@ import java.io.*;
 public class ServidorTCP {
 
     private int puerto;
-    private ServerSocket servidor;
     private Socket cliente;
     private DataInputStream in;
     private DataOutputStream out;
@@ -15,34 +14,39 @@ public class ServidorTCP {
     }
 
     public void iniciar() {
-        try {
+
+        while(true) {
             // Inicia el socket del servidor
-            servidor = new ServerSocket(puerto);
-            System.out.println("El servidor está escuchando en el puerto " + puerto);
+            try (ServerSocket servidor = new ServerSocket(puerto)) {
+                System.out.println("El servidor está escuchando en el puerto " + puerto);
 
-            // La única forma de cerrar el servidor es terminando el proceso
-            while (true) {
-                // El servidor siempre está a la espera de clientes que se conecten
-                cliente = servidor.accept();
-                System.out.println("Se ha conectado un cliente");
+                // La única forma de cerrar el servidor es terminando el proceso
+                while (true) {
 
-                // Inicia los flujos de entrada y salida entre servidor y cliente
-                in = new DataInputStream(cliente.getInputStream());
-                out = new DataOutputStream(cliente.getOutputStream());
+                    // El servidor siempre está a la espera de clientes que se conecten
+                    try (Socket cliente = servidor.accept()) {
+                        System.out.println("Se ha conectado un cliente");
 
-                do {
-                    // Recibe el siguiente int desde el cliente
-                    mensaje = in.readUTF();
-                    System.out.println("El cliente dice: " + mensaje);
+                        // Inicia los flujos de entrada y salida entre servidor y cliente
+                        in = new DataInputStream(cliente.getInputStream());
+                        out = new DataOutputStream(cliente.getOutputStream());
 
-                    // Interpreta la elección del cliente
-                    responder();
+                        do {
+                            // Recibe el siguiente int desde el cliente
+                            mensaje = in.readUTF();
+                            System.out.println("El cliente dice: " + mensaje);
 
-                } while(!mensaje.equals("salir"));
+                            // Interpreta la elección del cliente
+                            responder();
+
+                        } while (!mensaje.equals("salir"));
+
+                    }
+                }
+
+            } catch (IOException e) {
+                System.out.println("Error de entrada/salida: " + e.getMessage() + "\n");
             }
-
-        } catch (IOException e) {
-            System.out.println("Error de entrada/salida: " + e.getMessage() + "\n");
         }
     }
 
